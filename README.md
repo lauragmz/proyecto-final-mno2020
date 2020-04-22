@@ -1,7 +1,7 @@
 Proyecto Final
 ==============================
 
-A short description of the project.
+Solución de un problema de optimización numérica a través de la implementación de un método numérico en paralelo.
 
 Project Organization
 ------------
