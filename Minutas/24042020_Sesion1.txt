@@ -10,3 +10,6 @@ Siguientes pasos:
 3. Buscar más métodos
 	Lau encontró este método: Minimum spanning tree en el libro que nos va a mandar. 
 
+Erick nos sugiere revisar: 
++ particle swarm o 
++ simulated annealing
