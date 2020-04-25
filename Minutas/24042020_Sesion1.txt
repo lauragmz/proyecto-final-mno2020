@@ -1,0 +1,12 @@
+Problema: traveling salesman problem
+
+Primer método: backtracking y sabemos que tiene un tiempo exponencial. 
+Objetivo: encontrar un método con menor tiempo e idealmente, tiempo polinomial. 
+
+Siguientes pasos: 
+
+1. Programar el de backtracking y medir tiempos
+2. Hacer la programación en paralelo (comparar cuáles son los tiempos)
+3. Buscar más métodos
+	Lau encontró este método: Minimum spanning tree en el libro que nos va a mandar. 
+
