@@ -1,0 +1,27 @@
+Proyecto final
+
+* Tema: 
+Grafos dirigidos para optimizar la distancia que recorre la fuerza de ventas en una empresa del sector financiero
+
+* Lenguaje de programación: Python
+
+* Referencias: 
++ https://neo4j.com/blog/graph-search-algorithm-basics/
++ https://pdfs.semanticscholar.org/252d/e3882c058e06f86360f3332bc73a11035b4e.pdf
+
+* Siguientes pasos: 
+
++ Construcción de la base. Responsable: Ana 
+	Se empieza con Zonas Metropolitanas grandes: CDMX, Guadalajara y Monterrey.
++ Buscar implementaciones para definición de actividades.
+	Entendimiento del algoritmo. Miércoles 20/04/2020
+	Funciones 
+	Información relevante
++ Definir las actividades y los roles. 
++ Definir entregables para el 9 de mayo. 
+
+* Dudas: 
++ Expectativas claras para el 9 de mayo. 
+
++ Primer deadline: 9 de mayo
+
