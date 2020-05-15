@@ -36,3 +36,123 @@ class Utileria():
         nbr_resultado = nbr_c * nbr_r
 
         return nbr_resultado
+
+
+
+def CrearConexionRDS():
+    '''
+    '''
+    import psycopg2
+    import psycopg2.extras
+    from dynaconf import settings
+
+    conn = psycopg2.connect(database=settings.get('dbname'),
+                                user=settings.get('user'),
+                                password=settings.get('password'),
+                                host=settings.get('host'),
+                                port='5432')
+    return conn
+
+
+
+def get_data(query):
+    '''
+    '''
+    from io import StringIO
+    import psycopg2
+    import pandas as pd
+
+    try:
+        connection = CrearConexionRDS()
+        cursor = connection.cursor()
+
+        cursor.execute(query)
+
+        print("Selecting rows from table using cursor.fetchall")
+        records = cursor.fetchall()
+        df = pd.DataFrame(records)
+        col_names =  [i[0] for i in cursor.description]
+        df.columns = col_names
+        cursor.close()
+        connection.close()
+        print("PostgreSQL connection is closed")
+        return df
+
+    except (Exception, psycopg2.Error) as error :
+        print ("Error while fetching data from PostgreSQL", error)
+
+
+
+def convert(ruta):
+    '''
+    '''
+    s = [str(i) for i in ruta]
+    ruta_c = "-".join(s)
+    return(ruta_c)
+
+
+
+def ruta(df, fv):
+    '''
+    '''
+    import pandas as pd
+
+    df1 = df[(df.fza_ventas == fv)]
+    dfo = df1.filter(['fza_ventas', 'id_origen', 'lat_origen', 'lon_origen'], axis=1).drop_duplicates()
+    dfo = dfo.rename({'id_origen': 'id', 'lat_origen': 'lat', 'lon_origen': 'lon'}, axis=1)
+    dfd = df1.filter(['fza_ventas', 'no_cliente', 'lat_destino','lon_destino'], axis=1)
+    dfd = dfd.rename({'no_cliente': 'id', 'lat_destino': 'lat', 'lon_destino': 'lon'}, axis=1)
+    df2 = pd.concat([dfo, dfd])
+    df2['posicion'] = 0
+    df2['posicion'] = df2.groupby(['posicion']).cumcount()+1
+    return df2
+
+
+
+def distance_matrix(df, fv):
+    '''
+    '''
+    import pandas as pd
+
+
+    df2 = ruta(df, fv)
+    dm = []
+    ut = Utileria()
+    for i in range(df2.shape[0]):
+        for j in range(i+1, df2.shape[0]):
+            d = ut.calcular_distancia_coord(df2.iloc[i, 3], df2.iloc[i, 2],  df2.iloc[j, 3], df2.iloc[j, 2])
+            elemento = [df2.iloc[i,4], df2.iloc[j,4], d]
+            dm.append(elemento)
+    return dm, df2
+
+
+def split_tolist(string):
+    '''
+    '''
+    li = list(string.split("-"))
+    return li
+
+
+
+def vis_mapa(df, mejor_ruta):
+    '''
+    Preparación de datos para creación de mapa
+    '''
+    import folium
+
+    df=df.set_index('posicion')
+    df=df.reindex(mejor_ruta)
+    coordenadas = df[['lat', 'lon']].values.tolist()
+    os = df.loc[[1], ['lat', 'lon']].values.tolist() #Definición de punto: Oficina de servicio
+    cen_lon = df.lon.mean()
+    cen_lat = df.lat.mean()
+    mapi = folium.Map(location=[cen_lat,cen_lon],
+                  zoom_start = 12,
+                  tiles="cartodbpositron")
+    folium.PolyLine(coordenadas + [coordenadas[0]],
+                color='red',
+                weight=1,
+                opacity=0.8).add_to(mapi)
+    folium.Marker(os[0],icon=folium.Icon(color='blue') ).add_to(mapi)
+
+    return mapi
