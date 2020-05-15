@@ -1,15 +1,24 @@
-# Clase donde se almacenarán las funciones genéricas para la implementación
-# de los algoritmos Particle Swarn y Simulated Annealing
+from math import radians, cos, sin, asin, sqrt
+from dynaconf import settings
+from io import StringIO
+    
+import pandas as pd
+import psycopg2
+import psycopg2.extras
 
-
+    
 class Utileria():
+    '''
+    Clase donde se almacenarán las funciones genéricas para la implementación
+    de los algoritmos Particle Swarn y Simulated Annealing
+    '''
 
-    # Función para calcular la distancia entre coordenadas en la tierra (esfera)
-    # Recibe las coordenaas del punto A, del punto B y las unidades en las que se realizará el cálculo
-    # Devuelve la distancia de acuerdo a la unidad especificada (por defecto km)
     def calcular_distancia_coord(self, nbr_LongA, nbr_LatA, nbr_LongB, nbr_LatB, str_unidad='km'):
-        from math import radians, cos, sin, asin, sqrt
-
+     '''
+     Función para calcular la distancia entre coordenadas en la tierra (esfera)
+     Recibe las coordenaas del punto A, del punto B y las unidades en las que se realizará el cálculo
+     Devuelve la distancia de acuerdo a la unidad especificada (por defecto km)
+     '''
         # primero se convierte todo a radianes
         nbr_LongA = radians(nbr_LongA)
         nbr_LatA = radians(nbr_LatA)
@@ -42,10 +51,6 @@ class Utileria():
 def CrearConexionRDS():
     '''
     '''
-    import psycopg2
-    import psycopg2.extras
-    from dynaconf import settings
-
     conn = psycopg2.connect(database=settings.get('dbname'),
                                 user=settings.get('user'),
                                 password=settings.get('password'),
@@ -58,10 +63,6 @@ def CrearConexionRDS():
 def get_data(query):
     '''
     '''
-    from io import StringIO
-    import psycopg2
-    import pandas as pd
-
     try:
         connection = CrearConexionRDS()
         cursor = connection.cursor()
@@ -95,8 +96,6 @@ def convert(ruta):
 def ruta(df, fv):
     '''
     '''
-    import pandas as pd
-
     df1 = df[(df.fza_ventas == fv)]
     dfo = df1.filter(['fza_ventas', 'id_origen', 'lat_origen', 'lon_origen'], axis=1).drop_duplicates()
     dfo = dfo.rename({'id_origen': 'id', 'lat_origen': 'lat', 'lon_origen': 'lon'}, axis=1)
@@ -112,9 +111,6 @@ def ruta(df, fv):
 def distance_matrix(df, fv):
     '''
     '''
-    import pandas as pd
-
-
     df2 = ruta(df, fv)
     dm = []
     ut = Utileria()
