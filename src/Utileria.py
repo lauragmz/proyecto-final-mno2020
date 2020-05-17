@@ -1,12 +1,15 @@
 from math import radians, cos, sin, asin, sqrt
 from dynaconf import settings
 from io import StringIO
-    
+
 import pandas as pd
 import psycopg2
 import psycopg2.extras
 
-    
+from pandas import DataFrame, merge
+from scipy import stats
+
+
 class Utileria():
     '''
     Clase donde se almacenarán las funciones genéricas para la implementación
@@ -14,11 +17,11 @@ class Utileria():
     '''
 
     def calcular_distancia_coord(self, nbr_LongA, nbr_LatA, nbr_LongB, nbr_LatB, str_unidad='km'):
-     '''
-     Función para calcular la distancia entre coordenadas en la tierra (esfera)
-     Recibe las coordenaas del punto A, del punto B y las unidades en las que se realizará el cálculo
-     Devuelve la distancia de acuerdo a la unidad especificada (por defecto km)
-     '''
+        '''
+        Función para calcular la distancia entre coordenadas en la tierra (esfera)
+        Recibe las coordenaas del punto A, del punto B y las unidades en las que se realizará el cálculo
+        Devuelve la distancia de acuerdo a la unidad especificada (por defecto km)
+        '''
         # primero se convierte todo a radianes
         nbr_LongA = radians(nbr_LongA)
         nbr_LatA = radians(nbr_LatA)
@@ -117,7 +120,7 @@ def distance_matrix(df, fv):
     for i in range(df2.shape[0]):
         for j in range(i+1, df2.shape[0]):
             d = ut.calcular_distancia_coord(df2.iloc[i, 3], df2.iloc[i, 2],  df2.iloc[j, 3], df2.iloc[j, 2])
-            elemento = [df2.iloc[i,4], df2.iloc[j,4], d]
+            elemento = [df2.iloc[i,1], df2.iloc[j,1], d]
             dm.append(elemento)
     return dm, df2
 
@@ -152,3 +155,85 @@ def vis_mapa(df, mejor_ruta):
     folium.Marker(os[0],icon=folium.Icon(color='blue') ).add_to(mapi)
 
     return mapi
+
+
+def InsertarEnRDSDesdeArchivo(conn, data_file, nombre_tabla):
+
+    cur = conn.cursor()
+
+    # Load table from the file with header
+    print("copy {} from STDIN CSV HEADER QUOTE '\"'".format(nombre_tabla))
+    cur.copy_expert("copy {} from STDIN CSV HEADER QUOTE '\"'".format(nombre_tabla), data_file)
+    cur.execute("commit;")
+
+    print("Loaded data into {}".format(nombre_tabla))
+    cur.close()
+
+
+# Ejecuta un query y devuelve la cantidad de filas afectadas
+def EjecutarQuery(conn, query):
+    try:
+        with conn.cursor() as (cur):
+            cur.execute(query)
+            cur.execute("commit;")
+            rowcount = cur.rowcount
+        return rowcount
+    except Exception:
+        print('Excepcion en EjecutarQuery-cur.execute: ', query)
+        raise
+
+
+def GridSearch(par_Datos, par_ClaseAlgoritmo, par_Hiper, par_Iteraciones):
+
+    # Dataframe inicial
+    df0 = DataFrame({'key':[1]})
+
+    # Dataframe sobre el cual iremos pegando las demás tablas
+    df_Final = df0
+
+    # Lista para ir acumulando las columnas del dataframe
+    list_Columnas = ['key']
+
+    # Proceso para generar dataframes de cada hiper-parámetro y que el grid search se construya mediante
+    # el producto cartesiano de la combinación de los dataframes
+    for elemento, values in par_Hiper.items():
+
+        list_Columnas.append(elemento)
+
+        df_tmp = pd.DataFrame.from_dict(par_Hiper.get(elemento))
+        df_tmp.columns = [elemento]
+        df_tmp['key'] = 1
+        df_Final = merge(df_Final, df_tmp, on='key')[list_Columnas]
+
+    # Eliminamos la columna que nos ayudó a hacer el merge
+    del df_Final['key']
+
+    # Creamos una lista que contiene todas las combinaciones de hiper-parámetros
+    list_diccionarios = df_Final.to_dict(orient='records')
+
+    list_Resultado = []
+    for diccionario in list_diccionarios:
+        # print('--diccionario: ', diccionario)
+
+        lista_CostosMinimos = []
+        for iteracion in range(0, par_Iteraciones):
+            # print('-iteracion: ', iteracion)
+
+            # Ejecutar Método
+            obj_Algoritmo = par_ClaseAlgoritmo(par_Datos, diccionario)
+            obj_Algoritmo.Ejecutar()
+            lista_CostosMinimos.append(obj_Algoritmo.nbr_MejorCosto)
+
+        # print('--resultados: ', lista_CostosMinimos)
+
+        # Una vez que ya se ejecutó el algoritmo, podemos ir almacenando los resultados
+        nbr_Min = min(lista_CostosMinimos)
+        nbr_Max = max(lista_CostosMinimos)
+        nbr_Moda = stats.mode(lista_CostosMinimos)[0][0]
+        nbr_FrecModa = stats.mode(lista_CostosMinimos)[1][0]
+        str_Moda = str(nbr_Moda) + ' & ' + str(nbr_FrecModa)
+        list_Resultado.append([diccionario, nbr_Min, nbr_Max, str_Moda])
+
+    df = pd.DataFrame(list_Resultado, columns=['HiperParámetros', 'Mínimo','Máximo','Moda'])
+
+    return df
