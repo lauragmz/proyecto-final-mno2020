@@ -1,53 +1,16 @@
-Set:
+## Dashboard
+
+Se construyó la aplicación Web utilizando la herramienta "Dash". Dash es un entorno de trabajo de Python que está basado en Flask y React. Se escogió este entorno de trabajo por la facilidad de implementar el código previamente escrito en Python de creación de mapas y de algoritmos para resolver el problema del vendedor viajero.
+
+Para la construcción de la aplicación se genero un archivo "TSP.py" con los métodos de conexión y extracción a la base de datos y el archivo principal "app.py" que llama a los métodos y despliega el mapa.
+
+
+## ¿Cómo iniciar la aplicación?
 
 ```
-REPO_URL=paolamedo/dash
-BUILD_DIR=/home/user/midir
-```
-Use:
-```
-docker pull $REPO_URL:$VERSION
+python3 app.py
 ```
 
-Build:
-
 ```
-docker build $(pwd) -f Dockerfile-dash --force-rm -t $REPO_URL:$VERSION
-```
-
-Upload to Dockerhub:
-```
-docker login
-docker push $REPO_URL:$VERSION
-```
-
-
-Run:
-
-```
-docker run --rm -it --name jupyterlab-local -p 8888:8888 -v $BUILD_DIR:/home/jovyan/work $REPO_URL:$VERSION
-```
-
-
-
-
-## jupyter lab running at localhost:8888
-
-(not necessary) Enter to docker container with:
-
-```
-docker exec -it -u=miuser jupyterlab-local bash
-```
-
-Stop:
-
-```
-docker stop jupyterlab-local
-```
-
-Delete (if `--rm` wasn't used):
-
-
-```
-docker rm jupyterlab-local
+Luego navega al explorador localhost:8050
 ```
