@@ -1,3 +1,7 @@
+'''
+TODOS:
+1. Con más cuidades, solo cargar fza de ventas de esa cuidad
+'''
 from src.db_utils import get_data
 from src.visualize import ShortestPath
 
@@ -172,21 +176,10 @@ app.layout = html.Div(
                 ),
 
                 html.Div([
-                html.P(
-                    "Selecciona una fuerza de venta:",
-                    className="control_label",
-                ),
-                dcc.Dropdown(
-                    id="fza_dropdown",
-                    #options=edo.to_dict("records"),
-                    value=1,
-                    className="dcc_control",
-                    multi=False,
-                ),
                 html.P(id="radioitems-checklist-output",
                         className="control_label"),
 
-                html.P(
+                html.H6(
                     "Selecciona un algoritmo",
                     className="control_label",
                 ),
@@ -201,11 +194,35 @@ app.layout = html.Div(
                     #labelStyle={"display": "inline-block"},
                     className="dcc_control",
                 ),
+                html.H6(
+                    "Selecciona una cuidad:",
+                    className="control_label",
+                ),
+                dcc.Dropdown(
+                    id="ciudad_dropdown",
+                    #options=edo.to_dict("records"),
+                    value=1,
+                    className="dcc_control",
+                    multi=False,
+                ),
+
+                html.H6(
+                    "Selecciona una fuerza de venta",
+                    className="control_label",
+                ),
+                dcc.Dropdown(
+                    id="fza_dropdown",
+                    #options=edo.to_dict("records"),
+                    value=1,
+                    className="dcc_control",
+                    multi=False,
+                ),
+
                 html.P(
                     "",
                     className="control_label",
                 ),
-                html.Button("Ver rutas", id="button_envia", className="control_center"),
+                html.Button("Ver ruta", id="button_envia", className="control_center"),
 
 
                 ],
@@ -219,14 +236,14 @@ app.layout = html.Div(
         html.Div(
             [
                 html.Div(
-                    [html.H6(id="ruta-corta"),
-                    html.P("Ruta más corta")],
+                    [html.P(id="ruta-corta"),
+                    html.H6("Ruta más corta")],
                     id="wells",
                     className="mini_container",
                 ),
 
                 html.Div(
-                    [html.H6(id="distancia"), html.P("Distancia (en metros)")],
+                    [html.H6(id="distancia"), html.P("Distancia (en kilómetros)")],
                     id="esc",
                     className="mini_container",
                 ),
@@ -261,7 +278,8 @@ def toggle_fade(n, is_in):
 
 @app.callback(
     [Output("map", "srcDoc"),
-    Output('distancia','children')],
+    Output('distancia','children'),
+    Output('ruta-corta','children')],
     [Input('button_envia', "n_clicks")],
     [State('tipoAlgoritmo', "value"),
      State("fza_dropdown", "value")])
@@ -278,22 +296,20 @@ def update_results(n_clicks, value_tipo, value_fza):
         if value_fza == []:
             raise PreventUpdate
 
-        value_tipo =1
-        value_fza =124
         map_name = "mapas/mapa_"+ str(value_tipo) + \
                     "_" + str(value_fza) + ".html"
 
         agent = ShortestPath()
         # Si ya existe el mapa, solo saca la distancia
-        if os.path.isfile(map_name)==False:
-            distancia = agent.get_path(value_tipo,value_fza,map_name)
+        if os.path.isfile(map_name)==True:
+            distancia, ruta = agent.get_distance(value_tipo,value_fza)
         else:
-            distancia = agent.get_distance(value_tipo,value_fza)
+            distancia, ruta = agent.get_path(value_tipo,value_fza,map_name)
 
         abre_mapa = open(map_name, 'r').read()
-        distancia = format(distancia, ',')
+        distancia = format(float(round(distancia,2)), ',')
 
-        return abre_mapa, distancia
+        return abre_mapa, distancia, ruta
 
 @app.callback(
     Output("radioitems-checklist-output", "children"),
@@ -312,11 +328,39 @@ def on_form_change(n_drop):
 
 
 @app.callback(
+    [Output('ciudad_dropdown', 'options')],
+    [Input('tipoAlgoritmo', 'value')]
+)
+def update_dropdown_ciudad(tipo):
+    if tipo  ==  int(1):
+        algorithm_name = 'SA'
+    elif tipo  ==  int(2):
+        algorithm_name = 'PS'
+
+    query = "select distinct estado from trabajo.resultados \
+    order by estado ; "
+    print(query)
+    df = get_data(query)
+    df.columns = ['label']
+    df['value'] = df['label'] #df.index +1
+    print(df)
+    resp = [df.to_dict("records")]
+    return resp
+
+
+
+@app.callback(
     [Output('fza_dropdown', 'options')],
     [Input('tipoAlgoritmo', 'value')]
 )
-def update_dropdown(tipo):
-    query = "select distinct fza_ventas from trabajo.fuerza_ventas ; "
+def update_dropdown_fza(tipo):
+    if tipo  ==  int(1):
+        algorithm_name = 'SA'
+    elif tipo  ==  int(2):
+        algorithm_name = 'PS'
+
+    query = "select distinct id_fza_ventas from trabajo.resultados \
+    order by id_fza_ventas ; "
     df = get_data(query)
     df.columns = ['label']
     df['value'] = df['label']

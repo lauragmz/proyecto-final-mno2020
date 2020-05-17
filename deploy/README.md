@@ -7,6 +7,10 @@ Para la construcción de la aplicación se genero un archivo "TSP.py" con los m�
 
 ## ¿Cómo iniciar la aplicación?
 
-´´´
-python app.py
-´´´
+```
+python3 app.py
+```
+
+```
+Luego navega al explorador localhost:8050
+```
