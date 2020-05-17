@@ -40,7 +40,7 @@ class ShortestPath:
     def get_path(self, algorithm, fza_ventas, map_name):
         try:
             if algorithm  ==  int(1):
-                query = "SELECT * FROM trabajo.resultados WHERE algoritmo = 'SA' \
+                query = "SELECT * FROM trabajo.resultados_vw WHERE algoritmo = 'SA' \
                  AND id_fza_ventas = %s ;" % (str(fza_ventas))
                 df = get_data(query)
                 ruta = df['ruta_optima'][0].split(',')
@@ -57,7 +57,7 @@ class ShortestPath:
     def get_distance(self, algorithm, fza_ventas):
         try:
             if algorithm  ==  int(1):
-                query = "SELECT * FROM trabajo.resultados WHERE algoritmo = 'SA' \
+                query = "SELECT * FROM trabajo.resultados_vw WHERE algoritmo = 'SA' \
                  AND id_fza_ventas = %s ;" % (str(fza_ventas))
                 df = get_data(query)
                 distancia = df['distancia'][0]
