@@ -1,6 +1,9 @@
 from io import StringIO
 import psycopg2
 import pandas as pd
+
+import sys
+sys.path.append('../')
 import Utileria as Ut
 
 def save_rds(df,table_name):
@@ -28,7 +31,7 @@ def execute_sql(file_dir):
         cursor = connection.cursor()
 
         print(file_dir)
-        #cursor.execute(open(file_dir, "r").read())
+        cursor.execute(open(file_dir, "r").read())
         connection.commit()
         cursor.close()
         connection.close()
@@ -38,24 +41,27 @@ def execute_sql(file_dir):
 
 def main():
 
-    file_dir = "./../sql/create_db.sql"
+    # file_dir = "./../sql/create_db.sql"
+    # execute_sql(file_dir)
+
+    file_dir = "./sql/create_schemas.sql"
     execute_sql(file_dir)
 
-    file_dir = "./../sql/create_schemas.sql"
+    file_dir = "./sql/create_tables.sql"
     execute_sql(file_dir)
 
-    file_dir = "./../sql/create_tables.sql"
+    file_dir = "./sql/create_views.sql"
     execute_sql(file_dir)
 
-    file_name = "./../../data/raw/raw.csv"
+    file_name = "./../data/raw/raw.csv"
     df = pd.read_csv(file_name, encoding = "latin-1")
-    save_rds(df, "trabajo.fuerza_ventas")
+    save_rds(df, "raw.fuerza_ventas")
 
-    file_name = "./../../data/raw/base_nodos.csv"
+    file_name = "./../data/raw/base_nodos.csv"
     df = pd.read_csv(file_name)
-    save_rds(df, "trabajo.nodos_aux")
+    save_rds(df, "raw.nodos_aux")
 
-    file_dir = "clean_tables.sql"
+    file_dir = "./sql/clean_tables.sql"
     execute_sql(file_dir)
 
 # main()
