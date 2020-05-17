@@ -11,8 +11,7 @@ class Control:
         return
 
     def Transform(self):
-        # str_fzas_ventas = '123, 94459, 17147'
-        str_query = "SELECT * FROM trabajo.fuerza_ventas"
+        str_query = "SELECT * FROM raw.fuerza_ventas"
         df_Trabajo = ut.get_data(str_query)
         df_Grafos = transformaciones.generar_grafo(df_Trabajo)
         df_Grafos.to_csv('grafos_fza_ventas.csv', index=False, header=True)
@@ -78,11 +77,10 @@ class Control:
         str_Nodos = [str(nodo) for nodo in par_Camino]
         str_Nodos = ", ".join(str_Nodos)
         str_Insert = "insert into trabajo.resultados values \
-                      ({},'{}','{}','{}',{})".format(par_fza_ventas,
-                                                     par_Algorirmo,
-                                                     'cdmx',
-                                                     str_Nodos,
-                                                     par_Costo)
+                      ({},'{}','{}',{})".format(par_fza_ventas,
+                                                par_Algorirmo,
+                                                str_Nodos,
+                                                par_Costo)
         conn = ut.CrearConexionRDS()
         ut.EjecutarQuery(conn, str_Insert)
 
