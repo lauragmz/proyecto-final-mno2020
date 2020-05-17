@@ -29,6 +29,8 @@ class Grafo():
     df_Grafo = None
 
     def __init__(self, par_df):
+        self.dict_Nodos = {}
+        self.conj_Nodos = set()  # No hay repeticiones
         self.df_Grafo = par_df
         self.GenerarGrafo()
         self.nbr_CantNodos = len(self.conj_Nodos)
@@ -63,7 +65,14 @@ class Grafo():
 
         nbr_CostoTotal = 0
         for i in range(self.nbr_CantNodos - 1):
-            nbr_CostoTotal += self.dict_Nodos[(camino[i], camino[i+1])]
+            try:
+                nbr_CostoTotal += self.dict_Nodos[(camino[i], camino[i+1])]
+            except:
+                print('--self.dict_Nodos: ', self.dict_Nodos)
+                print('--camino: ', camino)
+                print('--i: ', i)
+                print('--camino[i]: ', camino[i])
+                raise
 
         nbr_CostoTotal += self.dict_Nodos[(camino[self.nbr_CantNodos - 1], camino[0])]
         return nbr_CostoTotal
@@ -111,7 +120,7 @@ class ParticleSwarm():
     def __init__(self, par_Datos, par_HiperParam, par_TipoEjec='SEQ'):
 
         # Datos y tipo de ejecución
-        self.df_Datos = par_Datos
+        self.df_Datos = par_Datos.values.tolist()
         self.str_TipoEjec = par_TipoEjec
 
         # Hiperparámetros del algoritmo
@@ -121,12 +130,12 @@ class ParticleSwarm():
         self.nbr_Beta = par_HiperParam.get('Beta')
 
         #################
-
+        self.list_Particulas = []
         self.Grafo = Grafo(self.df_Datos)
         list_CaminosAleatorios = self.Grafo.GenerarCaminosAleatorios(self.nbr_CantPartic)
         for list_CaminoAleatorio in list_CaminosAleatorios:
             particula = Particula(list_CaminoAleatorio, self.Grafo.CostoDelCamino(list_CaminoAleatorio))
-            self.list_Particulas .append(particula)
+            self.list_Particulas.append(particula)
 
         # updates "size_population"
         self.nbr_CantPartic = len(self.list_Particulas)
@@ -154,7 +163,6 @@ class ParticleSwarm():
         for t in range(self.nbr_Iteraciones):
 
             self.obj_MejorParticula = min(self.list_Particulas, key=attrgetter('nbr_CostoMejorCamino'))
-
             for particula in self.list_Particulas:
 
                 particula = self.ProcesoXParticula(particula, self.obj_MejorParticula)
