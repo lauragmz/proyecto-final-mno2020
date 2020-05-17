@@ -1,16 +1,12 @@
 from io import StringIO
 import psycopg2
 import pandas as pd
-
+import Utileria as Ut
 
 def save_rds(df,table_name):
 
     # Copy to postgres
-    connection = psycopg2.connect(user=MY_USER , # Usuario RDS
-                                 password=MY_PASS, # password de usuario de RDS
-                                 host=MY_HOST,#"127.0.0.1", # cambiar por el endpoint adecuado
-                                 port=MY_PORT, # cambiar por el puerto
-                                 database=MY_DB) # Nombre de la base de datos
+    connection = Ut.CrearConexionRDS()
     cursor = connection.cursor()
 
     records = df.values.tolist()
@@ -28,23 +24,27 @@ def save_rds(df,table_name):
 def execute_sql(file_dir):
     """ Sirve para ejecutar archivos .sql """
     try:
-        connection = psycopg2.connect(user=MY_USER , # Usuario RDS
-                                     password=MY_PASS, # password de usuario de RDS
-                                     host=MY_HOST,#"127.0.0.1", # cambiar por el endpoint adecuado
-                                     port=MY_PORT, # cambiar por el puerto
-                                     database=MY_DB) # Nombre de la base de datos
+        connection = Ut.CrearConexionRDS()
         cursor = connection.cursor()
 
         print(file_dir)
-        cursor.execute(open(file_dir, "r").read())
+        #cursor.execute(open(file_dir, "r").read())
         connection.commit()
         cursor.close()
         connection.close()
     except (Exception, psycopg2.Error) as error :
         print ("Error while executing sql file", error)
 
+
 def main():
-    file_dir = "create_tables.sql"
+
+    file_dir = "./../sql/create_db.sql"
+    execute_sql(file_dir)
+
+    file_dir = "./../sql/create_schemas.sql"
+    execute_sql(file_dir)
+
+    file_dir = "./../sql/create_tables.sql"
     execute_sql(file_dir)
 
     file_name = "./../../data/raw/raw.csv"
@@ -58,5 +58,4 @@ def main():
     file_dir = "clean_tables.sql"
     execute_sql(file_dir)
 
-
-main()
+# main()
