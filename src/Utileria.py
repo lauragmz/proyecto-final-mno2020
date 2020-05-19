@@ -11,16 +11,24 @@ from scipy import stats
 
 
 class Utileria():
-    '''
-    Clase donde se almacenarán las funciones genéricas para la implementación
+    '''Clase donde se almacenarán las funciones genéricas para la implementación
     de los algoritmos Particle Swarn y Simulated Annealing
     '''
 
     def calcular_distancia_coord(self, nbr_LongA, nbr_LatA, nbr_LongB, nbr_LatB, str_unidad='km'):
-        '''
-        Función para calcular la distancia entre coordenadas en la tierra (esfera)
-        Recibe las coordenaas del punto A, del punto B y las unidades en las que se realizará el cálculo
-        Devuelve la distancia de acuerdo a la unidad especificada (por defecto km)
+        '''Función para calcular la distancia entre coordenadas en la tierra (esfera)
+
+        Args:
+            nbr_LongA: Longitud de las coordenadas del punto A
+            nbr_LatA: Latitud de las coordenadas del punto A
+            nbr_LongB: Longitud de las coordenadas del punto B
+            nbr_LatB: Latitud de las coordenadas del punto B
+            str_unidad: Determina las unidades en las que se realizará el cálculo,
+                puede ser en kilometros 'km' o millas 'miles'
+
+        Returns:
+            nbr_resultado: Devuelve la distancia de acuerdo a la unidad especificada
+                (por defecto km)
         '''
         # primero se convierte todo a radianes
         nbr_LongA = radians(nbr_LongA)
@@ -52,8 +60,13 @@ class Utileria():
 
 
 def CrearConexionRDS():
-    '''
-    '''
+    """Función para crear la conexion con la RDS
+    (Asegurate de actualizar el archivo settings.toml)
+
+    Returns:
+        conn: Conexión a la RDS
+    """
+
     conn = psycopg2.connect(database=settings.get('dbname'),
                                 user=settings.get('user'),
                                 password=settings.get('password'),
@@ -64,8 +77,16 @@ def CrearConexionRDS():
 
 
 def get_data(query):
-    '''
-    '''
+    """Función para extraer la información de la base de datos RDS
+
+    Args:
+        query: Consulta a la base de datos RDS (Se escribe
+        en lenguaje SQL entre comillas)
+
+    Returns:
+        df: Un dataframe con la información que se consultó.
+    """
+
     try:
         connection = CrearConexionRDS()
         cursor = connection.cursor()
@@ -88,8 +109,16 @@ def get_data(query):
 
 
 def convert(ruta):
-    '''
-    '''
+    """Función para convertir una lista a string con las posiciones de la ruta
+    separadas por '-'
+
+    Args:
+        ruta: Una lista con las posiciones de la ruta
+
+    Returns:
+        ruta_c: Un string con las posiciones de la ruta separadas por '-'
+    """
+
     s = [str(i) for i in ruta]
     ruta_c = "-".join(s)
     return(ruta_c)
@@ -97,8 +126,19 @@ def convert(ruta):
 
 
 def ruta(df, fv):
-    '''
-    '''
+    """Función para obtener el dataframe de la fuerza de ventas para la que
+    se calculará la ruta óptima
+
+    Args:
+        df: Un dataframe con la información de toda la fuerza de ventas
+        fv: Valor único de la fuerza de ventas para la que se desea obtener
+            la ruta óptima (Integer)
+
+    Returns:
+        df2: Un dataframe con la información de la fuerza de ventas que se
+        especificó
+    """
+
     df1 = df[(df.fza_ventas == fv)]
     dfo = df1.filter(['fza_ventas', 'id_origen', 'lat_origen', 'lon_origen'], axis=1).drop_duplicates()
     dfo = dfo.rename({'id_origen': 'id', 'lat_origen': 'lat', 'lon_origen': 'lon'}, axis=1)
@@ -112,8 +152,20 @@ def ruta(df, fv):
 
 
 def distance_matrix(df, fv):
-    '''
-    '''
+    """Función para obtener la lista con las distancias de los puntos que tiene
+    que recorrer una fuerza de ventas
+
+    Args:
+        df: Un dataframe con la información de toda la fuerza de ventas
+        fv: Valor único de la fuerza de ventas para la que se desea obtener
+            la ruta óptima (Integer)
+
+    Returns:
+        df2: Un dataframe con la información necesaria para calcular las
+            distancias entre coordenadas
+        dm: Una lista con las distancias
+    """
+
     df2 = ruta(df, fv)
     dm = []
     ut = Utileria()
@@ -126,17 +178,32 @@ def distance_matrix(df, fv):
 
 
 def split_tolist(string):
-    '''
-    '''
+    """Función para convertir una ruta con las posiciones separadas por
+    '-' a lista
+
+    Args:
+        string: Un string con las posiciones de la ruta separadas por '-'
+
+    Returns:
+        li: Una lista con las posiciones de la ruta
+    """
+
     li = list(string.split("-"))
     return li
 
 
-
 def vis_mapa(df, mejor_ruta):
-    '''
-    Preparación de datos para creación de mapa
-    '''
+    """Función para preparar los datos para la creación del mapa
+
+    Args:
+        df: Un dataframe con la información de la fuerza de ventas para la
+        que se calculó la ruta óptima
+        mejor_ruta: Una lista con las posiciones de la ruta óptima
+
+    Returns:
+        mapi: Una mapa con al ruta óptima
+    """
+
     import folium
 
     df=df.set_index('posicion')
@@ -158,6 +225,13 @@ def vis_mapa(df, mejor_ruta):
 
 
 def InsertarEnRDSDesdeArchivo(conn, data_file, nombre_tabla):
+    """Procedimiento para insertar datos a la RDS desde un archivo
+
+    Args:
+        conn: Conexión a la RDS
+        data_file: Archivo con los datos que se insertarán a la RDS
+        nombre_table: Nombre de la tabla a la que se insertarán los datos
+    """
 
     cur = conn.cursor()
 
@@ -170,8 +244,19 @@ def InsertarEnRDSDesdeArchivo(conn, data_file, nombre_tabla):
     cur.close()
 
 
-# Ejecuta un query y devuelve la cantidad de filas afectadas
+
 def EjecutarQuery(conn, query):
+    """Función que devuelve la cantidad de filas afectadas por un query
+
+    Args:
+        conn: Conexión a la RDS
+        query: Consulta a la base de datos RDS (Se escribe
+            en lenguaje SQL entre comillas)
+
+    Returns:
+        rowcount: Cantidad de filas afectadas
+    """
+
     try:
         with conn.cursor() as (cur):
             cur.execute(query)
@@ -184,6 +269,19 @@ def EjecutarQuery(conn, query):
 
 
 def GridSearch(par_Datos, par_ClaseAlgoritmo, par_Hiper, par_Iteraciones):
+    """Función que ejecuta el GridSearch
+
+    Args:
+        par_Datos: Una lista con las distancias entre los puntos que visitará
+            una fuerza de ventas
+        par_ClaseAlgoritmo: Algoritmo que se desea utilizar para el calculo
+            de ruta óptima (PSO o SA)
+        par_Hiper: Un diccionario con los hiperparametros
+        par_Iteraciones: Veces que se ejecutará el algoritmo
+
+    Returns:
+        df: Un dataframe de los hiperparametros con su mínimo, máximo y moda
+    """
 
     # Dataframe inicial
     df0 = DataFrame({'key':[1]})
