@@ -1,12 +1,14 @@
 from io import StringIO
 import psycopg2
 import pandas as pd
+import os
 
-MY_USER = 'postgres'
-MY_DB = 'db_mno'
-MY_HOST = 'database-rita.cnevbxmlm0lp.us-west-2.rds.amazonaws.com'
-MY_PASS = '1234567890'
-MY_PORT = 5432
+MY_USER = os.environ['MY_USER']
+MY_DB = os.environ['MY_DB']
+MY_HOST = os.environ['MY_HOST']
+MY_PASS = os.environ['MY_PASS']
+MY_PORT = os.environ['MY_PORT']
+
 
 def get_data(query):
     try:
