@@ -195,13 +195,13 @@ app.layout = html.Div(
                     className="dcc_control",
                 ),
                 html.H6(
-                    "Selecciona una cuidad:",
+                    "Selecciona un estado:",
                     className="control_label",
                 ),
                 dcc.Dropdown(
                     id="ciudad_dropdown",
                     #options=edo.to_dict("records"),
-                    value=1,
+                    value="Jalisco",
                     className="dcc_control",
                     multi=False,
                 ),
@@ -337,7 +337,7 @@ def update_dropdown_ciudad(tipo):
     elif tipo  ==  int(2):
         algorithm_name = 'PS'
 
-    query = "select distinct estado from trabajo.resultados \
+    query = "select distinct estado from trabajo.resultados_vw \
     order by estado ; "
     print(query)
     df = get_data(query)
@@ -351,16 +351,15 @@ def update_dropdown_ciudad(tipo):
 
 @app.callback(
     [Output('fza_dropdown', 'options')],
-    [Input('tipoAlgoritmo', 'value')]
+    [Input('ciudad_dropdown', 'value')]
 )
 def update_dropdown_fza(tipo):
-    if tipo  ==  int(1):
-        algorithm_name = 'SA'
-    elif tipo  ==  int(2):
-        algorithm_name = 'PS'
 
-    query = "select distinct id_fza_ventas from trabajo.resultados \
-    order by id_fza_ventas ; "
+    query =  "select distinct id_fza_ventas " + \
+    "from trabajo.resultados_vw where estado = '" + \
+    str(tipo) +  "' order by id_fza_ventas;"
+    print(query)
+
     df = get_data(query)
     df.columns = ['label']
     df['value'] = df['label']

@@ -122,14 +122,14 @@ class ShortestPath:
     def get_distance(self, algorithm, fza_ventas):
         try:
             if algorithm  ==  int(3):
-                query = "SELECT * FROM trabajo.resultados WHERE \
+                query = "SELECT * FROM trabajo.resultados_vw WHERE \
                  id_fza_ventas = %s ORDER BY distancia limit 1;" % (str(fza_ventas))
             else:
                 if algorithm  ==  int(1):
                     algorithm_name = 'SA'
                 else:
                     algorithm_name = 'PS'
-                query = "SELECT * FROM trabajo.resultados WHERE algoritmo = '%s'\
+                query = "SELECT * FROM trabajo.resultados_vw WHERE algoritmo = '%s'\
                  AND id_fza_ventas = %s ;" % (str(algorithm_name), str(fza_ventas))
 
             print(query)
