@@ -122,6 +122,7 @@ class ParticleSwarm():
         # Datos y tipo de ejecución
         self.df_Datos = par_Datos.values.tolist()
         self.str_TipoEjec = par_TipoEjec
+        self.str_Clave = 'PS'
 
         # Hiperparámetros del algoritmo
         self.nbr_Iteraciones = par_HiperParam.get('Iteraciones')

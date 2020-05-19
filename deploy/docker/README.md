@@ -3,7 +3,7 @@ Set:
 ```
 VERSION=1.0.0
 REPO_URL=paolamedo/dash
-BUILD_DIR=/home/paola/Documents/MCD/MNO/proyecto-final-mno2020/deploy
+BUILD_DIR=/home/paola/Documents/MCD/MNO/tsp-dash
 ```
 Use:
 ```
