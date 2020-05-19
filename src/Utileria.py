@@ -327,11 +327,35 @@ def GridSearch(par_Datos, par_ClaseAlgoritmo, par_Hiper, par_Iteraciones):
         # Una vez que ya se ejecutó el algoritmo, podemos ir almacenando los resultados
         nbr_Min = min(lista_CostosMinimos)
         nbr_Max = max(lista_CostosMinimos)
-        nbr_Moda = stats.mode(lista_CostosMinimos)[0][0]
-        nbr_FrecModa = stats.mode(lista_CostosMinimos)[1][0]
-        str_Moda = str(nbr_Moda) + ' & ' + str(nbr_FrecModa)
-        list_Resultado.append([diccionario, nbr_Min, nbr_Max, str_Moda])
+        nbr_CantVecesMin = lista_CostosMinimos.count(nbr_Min)
+        str_FrecRelDistMin = str(nbr_CantVecesMin) + '/' + str(par_Iteraciones)
+        list_Resultado.append([diccionario, round(nbr_Min,3), round(nbr_Max,3), str_FrecRelDistMin])
 
-    df = pd.DataFrame(list_Resultado, columns=['HiperParámetros', 'Mínimo','Máximo','Moda'])
+        df = pd.DataFrame(list_Resultado, columns=['HiperParámetros', 'Distancia mínima (km)','Distancia máxima (km)','Frec. rel. dist. min.'])
 
     return df
+
+
+def Crear_listas_elementos(lista_elementos, num_cores):
+    '''
+    Función que crea tantas listas como Cores se tengan disponibles y distribuye a las fuerzas de venta entre dichas listas.
+
+    Args:
+        lista_elementos(list): lista con los id's de todos los empleados (fuerzas de venta)
+        num_cores(int): número de cores con los que cuenta el sistema
+    Return:
+        lista_total(list): lista formada a su vez por listas (igual al número de cores); tal que cada lista contiene un determinado número de empleados.
+    '''
+    num_elementos = len(lista_elementos)
+    lista_total = []
+
+    # Creación de tantas listas como número de cores y primer llenado de estas listas
+    for core in range(0, num_cores):
+        lista_total.append([lista_elementos[core]])
+
+    # Acomodar en las listas el resto de empleados
+    for elemento in range(num_cores, num_elementos):
+        posicion_lista_total = elemento % num_cores
+        lista_total[posicion_lista_total].append(lista_elementos[elemento])
+
+    return lista_total
