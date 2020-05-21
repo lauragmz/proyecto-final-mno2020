@@ -3,7 +3,7 @@ import dask
 import random
 import time
 from operator import attrgetter
-
+from collections import deque
 
 class Particula():
 
@@ -154,6 +154,14 @@ class ParticleSwarm():
 
         self.lst_MejorCamino = self.obj_MejorParticula.list_MejorCamino
         self.nbr_MejorCosto = self.obj_MejorParticula.nbr_CostoMejorCamino
+
+        # Re ordenamos los índices para que las rutas comiencen desde el nodo inicial
+        nbr_NodoInicio = self.df_Datos[0][0]
+        nbr_Index = self.lst_MejorCamino.index(nbr_NodoInicio)
+
+        items = deque(self.lst_MejorCamino)
+        items.rotate(-nbr_Index)
+        self.lst_MejorCamino=list(items)
 
         # Se toma la hora de fin del algoritmo, y se almacena la duración
         tm_final = time.time()
