@@ -92,7 +92,7 @@ class SimulatedAnnealing():
             state, e = self.tsp.anneal()
             tm_final = time.time()
             self.nbr_MejorCosto = e
-            self.nbr_MejorCamino = state
+            self.lst_MejorCamino = state
             self.nbr_TiempoEjec = tm_final - tm_inicio
         else:
             state = self.nodos
@@ -100,6 +100,6 @@ class SimulatedAnnealing():
             #e= 2
             tm_final = time.time()
             self.nbr_MejorCosto = e
-            self.nbr_MejorCamino = state
+            self.lst_MejorCamino = state
             self.nbr_TiempoEjec = tm_final - tm_inicio
         return

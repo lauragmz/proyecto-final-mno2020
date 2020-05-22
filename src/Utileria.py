@@ -93,14 +93,14 @@ def get_data(query):
 
         cursor.execute(query)
 
-        print("Selecting rows from table using cursor.fetchall")
+        # print("Selecting rows from table using cursor.fetchall")
         records = cursor.fetchall()
         df = pd.DataFrame(records)
         col_names =  [i[0] for i in cursor.description]
         df.columns = col_names
         cursor.close()
         connection.close()
-        print("PostgreSQL connection is closed")
+        # print("PostgreSQL connection is closed")
         return df
 
     except (Exception, psycopg2.Error) as error :
