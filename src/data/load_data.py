@@ -39,7 +39,7 @@ def execute_sql(file_dir):
         print ("Error while executing sql file", error)
 
 
-def main():
+def main(par_TipoEjec):
 
     # file_dir = "./../sql/create_db.sql"
     # execute_sql(file_dir)
@@ -53,8 +53,12 @@ def main():
     file_dir = "./sql/create_views.sql"
     execute_sql(file_dir)
 
-    file_name = "./../data/raw/raw.csv"
-    df = pd.read_csv(file_name, encoding = "latin-1")
+    if par_TipoEjec == 'DEMO':
+        file_name = "./../data/raw/raw_demo.csv"
+    elif par_TipoEjec == 'REAL':
+        file_name = "./../data/raw/raw.csv"
+
+    df = pd.read_csv(file_name, encoding="latin-1")
     save_rds(df, "raw.fuerza_ventas")
 
     file_name = "./../data/raw/base_nodos.csv"
