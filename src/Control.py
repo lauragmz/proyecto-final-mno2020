@@ -2,6 +2,7 @@ import Utileria as ut
 from data import load_data
 from data import transformaciones
 import dask
+import multiprocessing
 
 
 class Control():
@@ -15,19 +16,22 @@ class Control():
                               }
 
         # Definición de hiperparámetros de SA
-        self.dict_Hiper_SA = {'Tmax': 2500.0,
+        self.dict_Hiper_SA = {'Tmax': 25000.0,
                               'Tmin': 2.5,
-                              'steps': 500,
+                              'steps': 50000,
                               'updates': 100
                               }
         self.grafo_Ejecucion = None
 
+        # Atributo para controlar qué tipo de ejecución queremos realizar
+        self.str_TipoEjecucion = ''
+
     def CargarBase(self):
-        load_data.main()
+        load_data.main(self.str_TipoEjecucion)
         return
 
     def Transform(self):
-        str_query = "SELECT * FROM raw.fuerza_ventas"
+        str_query = "SELECT * FROM raw.fuerza_ventas order by no_cliente"
         df_Trabajo = ut.get_data(str_query)
         df_Grafos = transformaciones.generar_grafo(df_Trabajo)
         df_Grafos.to_csv('grafos_fza_ventas.csv', index=False, header=True)
@@ -78,7 +82,7 @@ class Control():
 
         lista_emp = self.ObtenerListaFzaVentas()
         print(lista_emp[0])
-        num_cores = 4
+        num_cores = multiprocessing.cpu_count()
 
         # Creación de listas de empleados dependiendo del número de Cores disponibles
         lista_empl = ut.Crear_listas_elementos(lista_emp, num_cores)
