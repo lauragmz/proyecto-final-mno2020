@@ -56,14 +56,14 @@ class SimulatedAnnealing():
     Returns:
         dic(diccionario): Diccionario de distancias entre nodos.
     """
-        nodos = df_fv.id_origen.unique().tolist()
-        for i in range(0,len(nodos)):
-            nodos[i]=int(nodos[i])
-        combinaciones = [[a, b] for a in nodos for b in nodos]
-        df2 = pd.DataFrame(combinaciones,columns=['id_origen', 'id_destino'])
-        df2['distancia'] = 0
+        self.nodos = pd.unique(df_fv[['id_origen', 'id_destino']].values.ravel('K')).tolist()
+        for i in range(0,len(self.nodos)):
+            self.nodos[i]=int(self.nodos[i])
+        combinaciones = [[a, b] for a in self.nodos for b in self.nodos]
+        self.df2 = pd.DataFrame(combinaciones,columns=['id_origen', 'id_destino'])
+        self.df2['distancia'] = 0
         i=0
-        for row in df2.values:
+        for row in self.df2.values:
             if (row[0]==row[1]):
                 row[2]= 0
             elif (row[0]!=row[1] and row[0]<row[1]):
@@ -74,23 +74,32 @@ class SimulatedAnnealing():
                 v= df_fv.query('id_origen == {} & id_destino == {}'.format(row[1],row[0]))
                 v2= v['distancia'].tolist()
                 row[2]= v2[0]
-            df2.iloc[i]=row
+            self.df2.iloc[i]=row
             i+=1
-        dic = {k : g.distancia.to_dict() for k, g in df2.set_index('id_origen').groupby('id_destino')}
-        random.shuffle(nodos)
+        dic = {k : g.distancia.to_dict() for k, g in self.df2.set_index('id_origen').groupby('id_destino')}
+        random.shuffle(self.nodos)
         #Se llama a la clase TSP, encargada de aplicar simulated annealing al problema del viajero
-        self.tsp = TravellingSalesmanProblem(nodos, dic, dict_Hiper)
+        self.tsp = TravellingSalesmanProblem(self.nodos, dic, dict_Hiper)
         self.str_Clave = 'SA'
         return
 
     def Ejecutar(self):
         """Funcion que ejecuta el algoritmo de SA para TSP"""
         tm_inicio = time.time()
-        self.tsp.set_schedule(self.tsp.auto(minutes=0.2))
-        self.tsp.copy_strategy = "slice"
-        state, e = self.tsp.anneal()
-        tm_final = time.time()
-        self.nbr_MejorCosto = e
-        self.lst_MejorCamino = state
-        self.nbr_TiempoEjec = tm_final - tm_inicio
+        if (len(self.nodos) > 2):
+            self.tsp.set_schedule(self.tsp.auto(minutes=0.2))
+            self.tsp.copy_strategy = "slice"
+            state, e = self.tsp.anneal()
+            tm_final = time.time()
+            self.nbr_MejorCosto = e
+            self.lst_MejorCamino = state
+            self.nbr_TiempoEjec = tm_final - tm_inicio
+        else:
+            state = self.nodos
+            e = 2*self.df2['distancia'].iloc[1]
+            #e= 2
+            tm_final = time.time()
+            self.nbr_MejorCosto = e
+            self.lst_MejorCamino = state
+            self.nbr_TiempoEjec = tm_final - tm_inicio
         return
