@@ -25,6 +25,19 @@ class Control():
 
         # Atributo para controlar qué tipo de ejecución queremos realizar
         self.str_TipoEjecucion = ''
+        self.__nbr_CoresDisponibles = multiprocessing.cpu_count()
+        self.__nbr_CoresParaUsar = multiprocessing.cpu_count()
+
+    def setCoresUso(self, par_Valor):
+        if par_Valor == 0:
+            print('No se pueden especificar cero cores')
+        elif par_Valor <= self.__nbr_CoresDisponibles:
+            self.__nbr_CoresParaUsar = par_Valor
+        else:
+            print('No se pueden asignar más cores de los disponibles')
+
+    def getCoresUso(self):
+        return self.__nbr_CoresParaUsar
 
     def CargarBase(self):
         load_data.main(self.str_TipoEjecucion)
@@ -47,7 +60,7 @@ class Control():
 
         for fza_ventas in lst_empleados:
             fza_ventas = int(fza_ventas)
-            print('--fza_ventas: ', fza_ventas)
+            # print('--fza_ventas: ', fza_ventas)
             df_Fza_Ventas = None
             str_Query = 'select id_origen, id_destino, distancia \
                          from trabajo.grafos where id_fza_ventas = {};'
@@ -82,7 +95,7 @@ class Control():
 
         lista_emp = self.ObtenerListaFzaVentas()
         print(lista_emp[0])
-        num_cores = multiprocessing.cpu_count()
+        num_cores = self.__nbr_CoresParaUsar
 
         # Creación de listas de empleados dependiendo del número de Cores disponibles
         lista_empl = ut.Crear_listas_elementos(lista_emp, num_cores)
