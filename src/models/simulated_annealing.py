@@ -61,7 +61,7 @@ class SimulatedAnnealing():
             self.nodos[i]=int(self.nodos[i])
         combinaciones = [[a, b] for a in self.nodos for b in self.nodos]
         self.df2 = pd.DataFrame(combinaciones,columns=['id_origen', 'id_destino'])
-        self.df2['distancia'] = 0
+        self.df2['distancia'] = 0.0
         i=0
         for row in self.df2.values:
             if (row[0]==row[1]):
