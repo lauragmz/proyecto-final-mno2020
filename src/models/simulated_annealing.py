@@ -3,6 +3,9 @@ import random
 from simanneal import Annealer
 import time
 import pandas as pd
+from collections import deque
+
+
 class TravellingSalesmanProblem(Annealer):
 
     """
@@ -77,10 +80,16 @@ class SimulatedAnnealing():
             self.df2.iloc[i]=row
             i+=1
         dic = {k : g.distancia.to_dict() for k, g in self.df2.set_index('id_origen').groupby('id_destino')}
+        #print(self.nodos)
+        #print(dic)
+        self.Nodo_Inicio = self.nodos[0]
         random.shuffle(self.nodos)
         #Se llama a la clase TSP, encargada de aplicar simulated annealing al problema del viajero
         self.tsp = TravellingSalesmanProblem(self.nodos, dic, dict_Hiper)
         self.str_Clave = 'SA'
+
+        #print(self.Nodo_Inicio)
+
         return
 
     def Ejecutar(self):
@@ -102,4 +111,12 @@ class SimulatedAnnealing():
             self.nbr_MejorCosto = e
             self.lst_MejorCamino = state
             self.nbr_TiempoEjec = tm_final - tm_inicio
+
+        nbr_NodoInicio = self.Nodo_Inicio
+        nbr_Index = self.lst_MejorCamino.index(nbr_NodoInicio)
+
+        items = deque(self.lst_MejorCamino)
+        items.rotate(-nbr_Index)
+        self.lst_MejorCamino=list(items)
+
         return
