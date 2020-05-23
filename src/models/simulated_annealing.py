@@ -87,7 +87,7 @@ class SimulatedAnnealing():
         #Se llama a la clase TSP, encargada de aplicar simulated annealing al problema del viajero
         self.tsp = TravellingSalesmanProblem(self.nodos, dic, dict_Hiper)
         self.str_Clave = 'SA'
-
+        self.dict_HiperParam = dict_Hiper
         #print(self.Nodo_Inicio)
 
         return
@@ -96,7 +96,7 @@ class SimulatedAnnealing():
         """Funcion que ejecuta el algoritmo de SA para TSP"""
         tm_inicio = time.time()
         if (len(self.nodos) > 2):
-            self.tsp.set_schedule(self.tsp.auto(minutes=0.2))
+            self.tsp.set_schedule(self.dict_HiperParam)
             self.tsp.copy_strategy = "slice"
             state, e = self.tsp.anneal()
             tm_final = time.time()
