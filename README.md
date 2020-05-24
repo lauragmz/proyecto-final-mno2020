@@ -41,10 +41,14 @@ El repositorio está organizado siguiendo la plantilla de [cookiecutter Data Sci
 + Notebooks. Carpeta con los notebooks que se trabajaron durante el desarrollo del proyecto ([borradores](https://github.com/lauragmz/proyecto-final-mno2020/tree/master/notebooks/borradores)) y los finales para la búsqueda de los mejores hiperparámetros y análisis de rutas con diferentes nodos ([entrega](https://github.com/lauragmz/proyecto-final-mno2020/tree/master/notebooks/entrega). 
 
 + [src]((https://github.com/lauragmz/proyecto-final-mno2020/tree/master/src/models). La carpeta contiene subcarpetas con los códigos para el desarrollo del proyecto: 
-       + sql: Creación de la base de datos y carga de datos
-       + modelos: Particle Swarm y Simulated Annealing
-       + Pipeline
-       + [Funciones genéricas](https://github.com/lauragmz/proyecto-final-mno2020/blob/master/src/Utileria.py) 
+
++ sql: Creación de la base de datos y carga de datos
+
++ modelos: Particle Swarm y Simulated Annealing
+
++ Pipeline
+
++ [Funciones genéricas](https://github.com/lauragmz/proyecto-final-mno2020/blob/master/src/Utileria.py) 
 
 ------------
 ```
