@@ -44,8 +44,7 @@ El proyecto se desarrolla bajo una metodología ágil siguiendo el marco de trab
 El repositorio está organizado siguiendo la plantilla de [cookiecutter Data Science](https://drivendata.github.io/cookiecutter-data-science/)
 
 ------------
-
-
+```
 ├── deploy                                                         <- archivos para el tablero
 ├── docker                                                         <- construcción de imagen
 ├── Minutas
@@ -92,6 +91,6 @@ El repositorio está organizado siguiendo la plantilla de [cookiecutter Data Sci
     │   ├── create_tables.sql
     │   └── create_views.sql
     └── Utileria.py
-
+ ```
 --------
 
