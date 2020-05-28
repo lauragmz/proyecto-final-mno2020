@@ -1,6 +1,0 @@
-[default]
-#Conexiones RDS
-user = 'user'
-dbname = 'dbname'
-host = 'host'
-password = 'port'
