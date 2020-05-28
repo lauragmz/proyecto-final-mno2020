@@ -9,11 +9,7 @@ El principal problema que presentan los colaboradores es que las visitas no tien
 
 ### Objetivo
 
-Encontar la ruta de los colaboradores que minimice la distancia recorrida. En las reuniones de seguimiento, el colaborador debe visitar a todos sus clientes y solo los puede visitar una sola vez. Así, el problema es similar al que se tiene con el de $Travel salesman person$. 
-
-### Algoritmos
-
-Para resolver el problema antes planteado, se revisarán los siguientes algoritmos: 
+Encontar la ruta de los colaboradores que minimice la distancia recorrida. En las reuniones de seguimiento, el colaborador debe visitar a todos sus clientes y solo los puede visitar una sola vez. Así, el problema es similar al que se tiene con el de Travelling Salesman Person y para resolverlo, se revisarán dos algoritmos:
 
 + Particle Swarm (PS)
 
@@ -39,9 +35,20 @@ El equipo PS revisará el código desarrollado por el equipo SA y viceversa.
 
 El proyecto se desarrolla bajo una metodología ágil siguiendo el marco de trabajo de scrum. Las tareas e issues generadas durante el desarrollo del proyecto están organizadas en un [project board](https://github.com/lauragmz/proyecto-final-mno2020/projects/1)
 
-
 ### Organización del repositorio
-El repositorio está organizado siguiendo la plantilla de [cookiecutter Data Science](https://drivendata.github.io/cookiecutter-data-science/)
+El repositorio está organizado siguiendo la plantilla de [cookiecutter Data Science](https://drivendata.github.io/cookiecutter-data-science/). Se describen brevemente algunas de las carpetas:
+
++ Notebooks. Carpeta con los notebooks que se trabajaron durante el desarrollo del proyecto ([borradores](https://github.com/lauragmz/proyecto-final-mno2020/tree/master/notebooks/borradores)) y los finales para la búsqueda de los mejores hiperparámetros y análisis de rutas con diferentes nodos ([entrega](https://github.com/lauragmz/proyecto-final-mno2020/tree/master/notebooks/entrega). 
+
++ [src]((https://github.com/lauragmz/proyecto-final-mno2020/tree/master/src/models). La carpeta contiene subcarpetas con los códigos para el desarrollo del proyecto: 
+
++ sql: Creación de la base de datos y carga de datos
+
++ modelos: Particle Swarm y Simulated Annealing
+
++ Pipeline
+
++ [Funciones genéricas](https://github.com/lauragmz/proyecto-final-mno2020/blob/master/src/Utileria.py) 
 
 ------------
 ```
@@ -51,7 +58,7 @@ El repositorio está organizado siguiendo la plantilla de [cookiecutter Data Sci
 │   ├── 20042020_Sesion0.txt
 │   ├── 24042020_Sesion1.txt
 │   └── TSP-plan_trabajo.xlsx
-├── notebooks
+├── notebooks                                                      
 │   ├── entrega
 │   │   ├── Analisis_ParticleSwarm_10nodos.ipynb
 │   │   ├── Analisis_ParticleSwarm_6nodos.ipynb
@@ -67,7 +74,7 @@ El repositorio está organizado siguiendo la plantilla de [cookiecutter Data Sci
 │   ├── figures
 │   └── MNO_ExamenFinal.pdf
 ├── setup.py
-└── src
+└── src                                                            
     ├── Control.py
     ├── data
     │   ├── __init__.py
