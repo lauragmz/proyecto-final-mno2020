@@ -16,9 +16,9 @@ class Control():
                               }
 
         # Definición de hiperparámetros de SA
-        self.dict_Hiper_SA = {'Tmax': 25000.0,
-                              'Tmin': 2.5,
-                              'steps': 50000,
+        self.dict_Hiper_SA = {'tmax': 10000.0,
+                              'tmin': 1.0,
+                              'steps': 5000,
                               'updates': 100
                               }
         self.grafo_Ejecucion = None
@@ -60,7 +60,7 @@ class Control():
 
         for fza_ventas in lst_empleados:
             fza_ventas = int(fza_ventas)
-            # print('--fza_ventas: ', fza_ventas)
+            print('--fza_ventas: ', fza_ventas)
             df_Fza_Ventas = None
             str_Query = 'select id_origen, id_destino, distancia \
                          from trabajo.grafos where id_fza_ventas = {};'
